@@ -1,0 +1,212 @@
+/* Smooth animation layer for the static clone */
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* --- Scroll reveal --- */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+/* Staggered children in grids */
+.menu-showcase .reveal:nth-child(2),
+.gallery-grid .reveal:nth-child(2),
+.contact-grid .reveal:nth-child(2) { transition-delay: 0.15s; }
+.menu-showcase .reveal:nth-child(3),
+.gallery-grid .reveal:nth-child(3),
+.contact-grid .reveal:nth-child(3) { transition-delay: 0.3s; }
+.gallery-grid .reveal:nth-child(4) { transition-delay: 0.45s; }
+.gallery-grid .reveal:nth-child(5) { transition-delay: 0.6s; }
+
+/* --- Hero video fade-in --- */
+.hero-bg--fade {
+  opacity: 0;
+  transition: opacity 1.4s ease;
+}
+.hero-bg--fade.is-ready {
+  opacity: 1;
+}
+
+/* --- About slider crossfade (landscape) --- */
+/*
+ * Images are stacked in .about-slider (position:relative; overflow:hidden)
+ * via absolute positioning. Specificity 0,2,0 safely overrides the standalone
+ * .about-landscape width/height rules in chunk2.css (specificity 0,1,0).
+ */
+.about-slider .about-landscape {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.7s ease;
+}
+.about-slider .about-landscape.active {
+  opacity: 1;
+}
+/* .fading keeps opacity:0 — the transition animates the 1→0 fade on removal of .active */
+
+/* --- About section: portrait pair slider --- */
+/*
+ * .about-portrait on the wrapper <div> supplies all responsive sizing from
+ * chunk2.css (308×552 → 260×468 → 100%/auto). .about-portrait-wrap adds
+ * only the stacking context for absolutely-positioned portrait slides.
+ */
+.about-portrait-wrap {
+  position: relative;
+  overflow: hidden;
+}
+.about-portrait-wrap .about-portrait-slide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  color: transparent;
+  opacity: 0;
+  transition: opacity 0.7s ease;
+}
+.about-portrait-wrap .about-portrait-slide.active {
+  opacity: 1;
+}
+/*
+ * At ≤980px chunk2.css sets .about-portrait {height:auto}. A wrapper div with
+ * only absolute children collapses to 0 height. Restore via aspect-ratio (4:5
+ * matches the portrait images and the chunk2.css ≤640px rule).
+ */
+@media (max-width: 980px) {
+  .about-portrait-wrap {
+    aspect-ratio: 4 / 5;
+  }
+}
+
+/* --- Hover polish --- */
+.menu-card {
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.45s ease;
+}
+.menu-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.25);
+}
+/*
+ * On desktop, .menu-center relies on transform: translate(-50%) for
+ * horizontal centering (position: absolute; left: 50%).
+ *
+ * Two rules in THIS file clobber that centering:
+ *   1. .reveal           { transform: translateY(30px) }   — pre-reveal state
+ *   2. .reveal.is-visible{ transform: none }               — post-reveal state
+ *   3. .menu-card:hover  { transform: translateY(-8px) }   — hover state
+ *
+ * All three have equal or higher specificity than .menu-center alone.
+ * These desktop-only overrides restore the centering offset in every state.
+ * Mobile / tablet are unaffected (menu-card uses position:static there).
+ */
+@media (min-width: 981px) {
+  /* Pre-reveal: slide up from below while staying centred horizontally */
+  .menu-center.reveal {
+    transform: translateX(-50%) translateY(30px);
+  }
+  /* Post-reveal default state: centred, no vertical offset */
+  .menu-center.is-visible {
+    transform: translateX(-50%);
+  }
+  /* Hover: lift only — horizontal position stays locked */
+  .menu-center:hover {
+    transform: translateX(-50%) translateY(-8px);
+  }
+}
+.gallery-grid > div {
+  overflow: hidden;
+}
+.gallery-grid img {
+  transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.gallery-grid > div:hover img {
+  transform: scale(1.06);
+}
+.pointybtn {
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+              filter 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+}
+.pointybtn:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+}
+.about-arrow {
+  transition: transform 0.25s ease, color 0.25s ease;
+}
+.about-arrow:hover {
+  transform: scale(1.25);
+}
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal,
+  .hero-bg--fade,
+  .about-landscape,
+  .about-portrait-slide,
+  .menu-card,
+  .gallery-grid img,
+  .pointybtn {
+    transition: none !important;
+  }
+  .reveal { opacity: 1; transform: none; }
+  .hero-bg--fade { opacity: 1; }
+}
+
+/* ── Testimonials SVG section ─────────────────────────────────────────────── */
+/*
+ * The SVG is 1440 × 370 with a built-in black background.
+ * We render it full-width and let it scale proportionally at every breakpoint.
+ * No extra background is added — the SVG colour is what you see.
+ */
+.testimonials-section {
+  width: 100%;
+  overflow: hidden;
+  display: block;
+  position: relative;
+  z-index: 1;           /* sits in normal stacking order between panels */
+  line-height: 0;       /* remove ghost space below inline image */
+}
+
+.testimonials-svg {
+  display: block;
+  width: 100%;
+  height: auto;         /* preserves 1440 : 370 aspect ratio at every width */
+  max-width: 100%;
+}
+
+/* Desktop ≥ 981px — natural full-width rendering, no extra scale needed */
+@media (min-width: 981px) {
+  .testimonials-section {
+    min-height: 0;
+  }
+}
+
+/* Tablet 641 – 980px — slightly increase visual weight */
+@media (max-width: 980px) and (min-width: 641px) {
+  .testimonials-section {
+    min-height: 0;
+  }
+}
+
+/* Mobile ≤ 640px — ensure no horizontal overflow */
+@media (max-width: 640px) {
+  .testimonials-section {
+    overflow-x: hidden;
+  }
+  .testimonials-svg {
+    min-width: 0;
+  }
+}

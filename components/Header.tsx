@@ -14,7 +14,8 @@ export default function Header() {
   // On interior routes (e.g. /menu) there is no full-screen hero video, so the
   // logo/nav should start in their compact "scrolled" state instead of the
   // large centered hero state used on the homepage.
-  const forceCompact = pathname !== "/";
+  const isHome = pathname === "/";
+  const forceCompact = !isHome;
   const compact = scrolled || forceCompact;
 
   useEffect(() => {
@@ -36,18 +37,21 @@ export default function Header() {
 
   const closeMenu = () => setMenuOpen(false);
 
+  // Section anchors live on the homepage. On the homepage we smooth-scroll in
+  // place; on any other route (e.g. /menu) we let the browser navigate to the
+  // homepage hash (e.g. "/#about") so the links work from anywhere.
+  const sectionHref = (hash: string) => (isHome ? hash : `/${hash}`);
+
   const handleAnchorClick = (
     e: React.MouseEvent<HTMLAnchorElement>,
-    href: string
+    hash: string
   ) => {
-    if (href.startsWith("#")) {
+    if (isHome) {
       e.preventDefault();
-      closeMenu();
-      const target = document.querySelector(href);
+      const target = document.querySelector(hash);
       if (target) target.scrollIntoView({ behavior: "smooth" });
-    } else {
-      closeMenu();
     }
+    closeMenu();
   };
 
   return (
@@ -72,18 +76,21 @@ export default function Header() {
           <Link href="/" className="is-active">
             HOME
           </Link>
-          <a href="#about" onClick={(e) => handleAnchorClick(e, "#about")}>
+          <a
+            href={sectionHref("#about")}
+            onClick={(e) => handleAnchorClick(e, "#about")}
+          >
             ABOUT
           </a>
           <Link href="/menu">MENU</Link>
           <a
-            href="#contact"
+            href={sectionHref("#contact")}
             onClick={(e) => handleAnchorClick(e, "#contact")}
           >
             CONTACT
           </a>
           <a
-            href="#booking-form"
+            href={sectionHref("#booking-form")}
             className="no-underline"
             onClick={(e) => handleAnchorClick(e, "#booking-form")}
           >
@@ -115,20 +122,23 @@ export default function Header() {
         <Link href="/" className="is-active" onClick={closeMenu}>
           HOME
         </Link>
-        <a href="#about" onClick={(e) => handleAnchorClick(e, "#about")}>
+        <a
+          href={sectionHref("#about")}
+          onClick={(e) => handleAnchorClick(e, "#about")}
+        >
           ABOUT
         </a>
         <Link href="/menu" onClick={closeMenu}>
           MENU
         </Link>
         <a
-          href="#contact"
+          href={sectionHref("#contact")}
           onClick={(e) => handleAnchorClick(e, "#contact")}
         >
           CONTACT
         </a>
         <a
-          href="#booking-form"
+          href={sectionHref("#booking-form")}
           className="no-underline"
           onClick={(e) => handleAnchorClick(e, "#booking-form")}
         >

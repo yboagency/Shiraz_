@@ -168,12 +168,19 @@ a.menu-card {
  * About palette: cream text (#fff2e1), warm gold accents, deep-red backdrop.
  */
 
-/* Ken Burns slow zoom + gentle slide-in on the ACTIVE slide (both galleries).
+/* Ken Burns slow zoom on the ACTIVE slide (both galleries).
  * Driven by an animation (transform), so it never fights the opacity crossfade
- * transition already defined above. */
+ * transition already defined above.
+ *
+ * NOTE: this is a pure centred zoom (no horizontal translate). A previous
+ * translateX(12px) start shifted the image inward from the left, uncovering the
+ * frame's rounded left corner until the zoom "expanded" — making the left edge
+ * look square. Keeping scale >= 1 at every keyframe means the image always
+ * overflows and fully covers the rounded frame, so BOTH corners stay rounded
+ * before, during and after the animation. */
 @keyframes aboutKenBurns {
-  0%   { transform: translateX(12px) scale(1.015); }
-  100% { transform: translateX(0)    scale(1.09); }
+  0%   { transform: scale(1.015); }
+  100% { transform: scale(1.09); }
 }
 .panel--about .about-slider .about-landscape.active,
 .panel--about .about-portrait-wrap .about-portrait-slide.active {

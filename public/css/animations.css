@@ -358,6 +358,29 @@ a.menu-card {
   .testimonials-section {
     min-height: 0;
   }
+  /*
+   * The quote text is baked into the SVG (vector paths) and sits centred within
+   * viewBox x 385–1053 of a 1440-wide canvas, leaving ~385px of empty black
+   * margin on each side. Rendering the SVG wider than the container and keeping
+   * it centred lets .testimonials-section's overflow:hidden crop ONLY that empty
+   * margin — enlarging the quote for readability with no horizontal scroll and
+   * no clipping of the text. Desktop (>=981px) is untouched.
+   */
+  .testimonials-svg {
+    width: 150%;
+    max-width: none;
+    margin-left: -25%;
+    /*
+     * Make the black quote band 1/3 taller on tablet without distorting or
+     * clipping the (fixed-aspect) artwork: add matching-black vertical padding.
+     * The image content height here is 150% × (370/1440) = 38.54% of the section
+     * width, so 6.42% padding top + bottom = 12.85% = exactly 1/3 of that height.
+     * box-sizing:content-box ensures the padding is ADDED to the height.
+     */
+    box-sizing: content-box;
+    background: #000;
+    padding-block: 6.42%;
+  }
 }
 
 @media (max-width: 640px) {
@@ -366,6 +389,16 @@ a.menu-card {
   }
   .testimonials-svg {
     min-width: 0;
+    width: 185%;
+    max-width: none;
+    margin-left: -42.5%;
+    /*
+     * Same +1/3 height treatment for mobile. Content height = 185% × (370/1440)
+     * = 47.53% of section width, so 7.92% padding top + bottom = 15.85% = 1/3.
+     */
+    box-sizing: content-box;
+    background: #000;
+    padding-block: 7.92%;
   }
 }
 

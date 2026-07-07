@@ -8,6 +8,7 @@ const menuCards = [
     className: "menu-card menu-left reveal",
     title: "STARTERS",
     desc: "Kabuli, Chapli Kebab & more",
+    href: "/menu#cat-starters",
   },
   {
     src: "/pictures/Maindish.webp",
@@ -15,6 +16,7 @@ const menuCards = [
     className: "menu-card menu-center reveal",
     title: "MAIN DISHES",
     desc: "Bolani, Aushak, Mantu & more",
+    href: "/menu#cat-afghan-main-course",
   },
   {
     src: "/pictures/desserts.webp",
@@ -22,6 +24,7 @@ const menuCards = [
     className: "menu-card menu-right reveal",
     title: "DESSERTS",
     desc: "Traditional sweets & more",
+    href: "/menu#cat-desserts",
   },
 ];
 
@@ -37,7 +40,12 @@ export default function MenuSection() {
         </p>
         <div className="menu-showcase">
           {menuCards.map((card) => (
-            <article key={card.title} className={card.className}>
+            <Link
+              key={card.title}
+              href={card.href}
+              className={card.className}
+              aria-label={`View ${card.title} on our menu`}
+            >
               <picture style={{ display: "block" }}>
                 <Image
                   src={card.src}
@@ -51,7 +59,7 @@ export default function MenuSection() {
               </picture>
               <h3>{card.title}</h3>
               <p>{card.desc}</p>
-            </article>
+            </Link>
           ))}
         </div>
         <Link href="/menu">

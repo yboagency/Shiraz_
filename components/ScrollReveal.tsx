@@ -11,8 +11,23 @@ export default function ScrollReveal() {
         (entries) => {
           entries.forEach((entry) => {
             if (entry.isIntersecting) {
-              entry.target.classList.add("is-visible");
-              io.unobserve(entry.target);
+              const el = entry.target as HTMLElement;
+              el.classList.add("is-visible");
+              io.unobserve(el);
+              // Release the compositor-layer hint once the reveal transition
+              // finishes. Leaving `will-change` on every section permanently
+              // keeps dozens of promoted layers alive, which the browser must
+              // re-composite when scrolling quickly and reversing direction —
+              // the cause of the split-second scroll hang. Dropping it here
+              // returns each section to a normal layer after it has animated.
+              const release = () => {
+                el.style.willChange = "auto";
+                el.removeEventListener("transitionend", release);
+              };
+              el.addEventListener("transitionend", release);
+              // Fallback for cases where transitionend never fires
+              // (e.g. prefers-reduced-motion disables the transition).
+              window.setTimeout(release, 1100);
             }
           });
         },

@@ -197,8 +197,18 @@ export default function MenuPage() {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            entry.target.classList.add("is-shown");
-            io.unobserve(entry.target);
+            const el = entry.target as HTMLElement;
+            el.classList.add("is-shown");
+            io.unobserve(el);
+            // Drop the compositor-layer hint after the reveal finishes so we
+            // don't keep every section promoted for the whole session (retained
+            // layers cause scroll-reversal jank). See ScrollReveal.tsx.
+            const release = () => {
+              el.style.willChange = "auto";
+              el.removeEventListener("transitionend", release);
+            };
+            el.addEventListener("transitionend", release);
+            window.setTimeout(release, 1400);
           }
         });
       },

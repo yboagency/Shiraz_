@@ -231,14 +231,24 @@ export default function MenuPage() {
     return () => io.disconnect();
   }, []);
 
-  /* Keep the active pill scrolled into view within the horizontal nav */
+  /* Keep the active pill within view of the horizontal nav.
+   * Recentres INSTANTLY and only when the pill is actually off-screen, so it
+   * never runs a smooth animation that competes with the user's vertical
+   * scroll (that competition is what made the sticky bar bounce/jitter). */
   useEffect(() => {
     const track = navTrackRef.current;
     if (!track) return;
     const btn = track.querySelector<HTMLElement>(`[data-nav="${activeId}"]`);
-    if (btn) {
-      const left = btn.offsetLeft - track.clientWidth / 2 + btn.clientWidth / 2;
-      track.scrollTo({ left, behavior: "smooth" });
+    if (!btn) return;
+    const viewStart = track.scrollLeft;
+    const viewEnd = viewStart + track.clientWidth;
+    const btnStart = btn.offsetLeft;
+    const btnEnd = btnStart + btn.clientWidth;
+    if (btnStart < viewStart + 8 || btnEnd > viewEnd - 8) {
+      track.scrollTo({
+        left: btnStart - track.clientWidth / 2 + btn.clientWidth / 2,
+        behavior: "auto",
+      });
     }
   }, [activeId]);
 

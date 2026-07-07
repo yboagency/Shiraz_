@@ -199,6 +199,7 @@ body:has(.menu-page) {
   overflow-x: auto;
   scrollbar-width: none;
   scroll-snap-type: x proximity;
+  overscroll-behavior-x: contain;
 }
 .mnu-nav-track::-webkit-scrollbar { display: none; }
 .mnu-nav-btn {

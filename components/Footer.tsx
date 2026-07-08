@@ -103,7 +103,7 @@ export default function Footer() {
               Cookie Policy
             </a>
             <a
-              href="https://shirazafghan.co.uk/terms"
+              href="/terms-and-conditions"
               style={{ color: "#8a9eb5", textDecoration: "underline" }}
             >
               Terms &amp; Conditions

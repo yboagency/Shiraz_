@@ -333,6 +333,21 @@ a.menu-card {
   }
 }
 
+/* ── Mobile / tablet scroll performance ───────────────────────────────────
+ * On real phones the scrolled header runs an infinite, drifting blurred layer
+ * (navLiquidFlow: a filter:blur(20px) ::before that animates transform behind a
+ * fixed, backdrop-filtered header). That layer repaints every frame and, while
+ * scrolling quickly and reversing, contributes to the brief hang/glitch felt on
+ * actual mobile devices. The drift is imperceptible on a small screen, so we
+ * freeze ONLY the animation on tablet/mobile — the static soft glow, colours and
+ * layout are unchanged. Desktop (>=1025px, where blur is heaviest) is untouched.
+ * chunk2.css loads before this file, so this override wins. */
+@media (max-width: 1024px) {
+  .nav.nav--scrolled .nav-bg-container::before {
+    animation: none !important;
+  }
+}
+
 /* ── Testimonials SVG section ─────────────────────────────────────────────── */
 /*
  * The SVG is 1440 × 370 with a built-in black background.

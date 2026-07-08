@@ -200,6 +200,7 @@ body:has(.menu-page) {
   scrollbar-width: none;
   scroll-snap-type: x proximity;
   overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
 }
 .mnu-nav-track::-webkit-scrollbar { display: none; }
 .mnu-nav-btn {
@@ -349,7 +350,6 @@ body:has(.menu-page) {
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.32);
   transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
               box-shadow 0.45s ease, border-color 0.45s ease;
-  will-change: transform;
 }
 .mnu-card-media {
   position: relative;
@@ -621,7 +621,27 @@ body:has(.menu-page) {
 
 /* iPad / tablet */
 @media (max-width: 980px) {
-  .mnu-nav { top: 88px; }
+  .mnu-nav {
+    top: 88px;
+    /* Real mobile fix: backdrop-filter:blur() on a position:sticky element
+       forces a per-frame backdrop re-blur while scrolling, and the composited
+       sticky layer lags the scroll on iOS Safari / mobile Chrome — this is what
+       made the category bar visibly bounce/jitter on real phones. The bar was
+       already ~0.8–0.94 opaque, so we drop the (barely-visible) live blur and
+       use a near-opaque background instead. Result: the bar stays rock-stable
+       while scrolling, with no visual change to the layout. Desktop keeps blur. */
+    background: linear-gradient(180deg, rgba(13, 4, 0, 0.97), rgba(13, 4, 0, 0.92));
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  /* Same reasoning for the per-card image tags — dozens of live blur layers are
+     expensive to repaint on every scroll frame on mobile. Slightly higher bg
+     opacity keeps the label just as legible without the blur. */
+  .mnu-card-tag {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: rgba(13, 4, 0, 0.72);
+  }
   .mnu-section { scroll-margin-top: 156px; }
   /* trim the hero so the first view isn't mostly empty dark space */
   .mnu-hero { min-height: 84vh; min-height: 84dvh; padding-top: 116px; }

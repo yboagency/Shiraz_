@@ -18,7 +18,7 @@ This project is a **custom frontend website** for Shiraz Afghan Restaurant. It w
 | **Devices supported** | Desktop, iPad/tablet, and mobile/iPhone |
 | **Content model** | Static/hardcoded frontend content (menu items, text, images) |
 
-The website is **deployment-ready** and can be hosted on platforms such as Vercel after the code is pushed to GitHub.
+The website is **deployment-ready** and can be hosted on **Coolify** after the latest code is pushed to GitHub.
 
 ---
 
@@ -319,111 +319,173 @@ Then open **http://localhost:3000** again to confirm the production build works.
 
 ---
 
-## GitHub Push Instructions
+## Deployment Guide — Coolify
 
-The project repository is:
+This section explains how to deploy the Shiraz Afghan Restaurant website using **Coolify**. Coolify is a self-hosted platform that can pull code from GitHub, build the project, and run it as a live website.
 
-**https://github.com/KhaanFaizan/Shiraz.git**
+This is a **frontend-only Next.js website**. There is currently **no backend**, **no database**, and **no required environment variables**. Coolify should run it as a **Next.js / Node.js application** — not as a simple static HTML/CSS upload.
 
-### First-time push (new local project)
+### Project structure (what Coolify will deploy)
 
-```bash
-git init
-git add .
-git status
-git commit -m "Initial commit"
-git branch -M main
-git remote add origin https://github.com/KhaanFaizan/Shiraz.git
-git push -u origin main
-```
+| Folder / file | Purpose |
+|---------------|---------|
+| `app/` | Next.js App Router pages and routes (homepage, menu, legal pages) |
+| `components/` | Reusable frontend components (header, hero, menu, footer, etc.) |
+| `public/` | Static assets — images, CSS files, food/menu photos, favicons |
+| `public/css/` | Styling files (`chunk2.css`, `animations.css`, `menu.css`, `privacy.css`) |
+| `package.json` | Project scripts and dependencies |
 
-### If the remote already exists
-
-```bash
-git remote set-url origin https://github.com/KhaanFaizan/Shiraz.git
-git push -u origin main
-```
-
-### If GitHub rejects the push (existing README or unrelated history)
-
-Option A — pull and merge first:
-
-```bash
-git pull origin main --allow-unrelated-histories
-git push -u origin main
-```
-
-Option B — if you intentionally want to replace remote history (use with caution):
-
-```bash
-git push -u origin main --force
-```
-
-> **Note:** Force push overwrites remote history. Only use this if the team agrees the remote content should be replaced.
-
-### Ongoing updates
-
-```bash
-git add .
-git commit -m "Describe your changes here"
-git push origin main
-```
+There is **no backend folder**, **no database setup**, and **no required environment variables** for the current version.
 
 ---
 
-## Deployment
+### 1. Before deployment
 
-This is a **frontend Next.js application**. Deployment means hosting the built site so visitors can access it on the internet.
+Before deploying on Coolify, make sure the **latest working code is pushed to GitHub**:
 
-### A. Vercel Deployment (Recommended)
+**Repository:** [https://github.com/KhaanFaizan/Shiraz.git](https://github.com/KhaanFaizan/Shiraz.git)
 
-[Vercel](https://vercel.com/) is made by the creators of Next.js and is the **easiest and safest** option for this project.
+It is also recommended to test the production build locally first. Open a terminal in the project folder and run:
 
-**Step-by-step:**
+```bash
+npm install
+npm run build
+```
 
-1. Push your latest code to GitHub (see section above)
-2. Go to [https://vercel.com/](https://vercel.com/) and sign in (GitHub login works well)
-3. Click **Add New Project**
-4. **Import** the GitHub repository: `KhaanFaizan/Shiraz`
-5. Confirm settings:
-   - **Framework Preset:** Next.js (should auto-detect)
-   - **Install Command:** `npm install`
-   - **Build Command:** `npm run build`
-   - **Output settings:** use default Next.js settings (do not override unless instructed)
-6. Click **Deploy**
-7. Wait for the build to finish — Vercel will provide a live URL (e.g. `https://shiraz-xxx.vercel.app`)
-8. Open the live URL and verify homepage, `/menu`, and legal pages
-9. **Optional:** connect a custom domain (e.g. `shirazafghan.co.uk`) in Vercel project settings
-10. Future pushes to the `main` branch on GitHub will **automatically redeploy** the site
+- **`npm install`** — installs the project dependencies needed to run and build the site.
+- **`npm run build`** — checks whether the project can build successfully for production.
 
-### B. Manual Deployment on a Hosting Server
+If the build fails locally, the issue should be fixed **before** deploying on Coolify.
 
-If deploying outside Vercel:
+---
 
-| Hosting type | Guidance |
-|--------------|----------|
-| **Shared hosting (static only)** | Standard Next.js apps require Node.js. Static-only hosts may not support this project without additional static-export configuration. **Vercel is strongly recommended.** |
-| **VPS / Node.js server** | Install Node.js, clone the repo, run `npm install`, then `npm run build`, then `npm start`. The project is configured with `output: "standalone"` in `next.config.ts` for production server deployment. |
-| **Docker / cloud VM** | Same as VPS — build with `npm run build`, run with `npm start` or use the standalone output. |
+### 2. Log in to Coolify
 
-For most teams, **Vercel remains the simplest path** with the least risk of misconfiguration.
+1. Open your **Coolify dashboard** in a web browser (the URL provided by your server administrator).
+2. Log in using your **Coolify / server credentials**.
 
-### C. Deployment Checklist
+---
 
-Before considering deployment complete, verify:
+### 3. Create or select a Coolify project
 
-- [ ] `npm run build` completes without errors locally
-- [ ] All images load correctly on the live site
-- [ ] Homepage loads and all sections display properly
-- [ ] `/menu` page works — categories, dish cards, Show More / Show Less
-- [ ] Legal pages work: `/privacy-policy`, `/cookie-policy`, `/terms-and-conditions`
-- [ ] Header and footer links work (including anchor links to homepage sections)
-- [ ] Mobile view checked on a real phone or browser dev tools
-- [ ] iPad / tablet view checked
-- [ ] Desktop view checked
-- [ ] No broken external menu links (menu should stay on internal `/menu`)
-- [ ] No critical errors in the browser console
-- [ ] Phone (`020 8569 0777`) and email links work on mobile
+1. In Coolify, **create a new project** or open the existing **Shiraz** project (if one already exists).
+2. **Add a new application / resource** for the website inside that project.
+
+The exact menu labels may vary slightly depending on your Coolify version, but you are looking for the option to add a new web application.
+
+---
+
+### 4. Connect the GitHub repository
+
+1. Choose **GitHub** as the source for the application.
+2. If your GitHub account is not connected yet, follow the prompts to **connect GitHub** to Coolify.
+3. Select this repository: **`KhaanFaizan/Shiraz`**
+4. Select the branch: **`main`**
+
+Coolify will use this repository as the source for building and deploying the website. When new code is pushed to the `main` branch on GitHub, you can redeploy from Coolify to publish the latest version.
+
+---
+
+### 5. Choose the application type
+
+This project must be deployed as a **Node.js / Next.js application**.
+
+- If Coolify **auto-detects** the framework, verify that it detects the project as **Next.js**.
+- **Do not** deploy it as a simple static HTML/CSS site by manually uploading source files.
+- This is a **Next.js project** and must be **built and run** as a Next.js / Node.js application.
+
+---
+
+### 6. Build and start settings
+
+Enter the following deployment settings in Coolify:
+
+| Setting | Value |
+|---------|-------|
+| **Install command** | `npm install` |
+| **Build command** | `npm run build` |
+| **Start command** | `npm start` |
+| **Application port** | `3000` |
+
+**What each setting does:**
+
+- **`npm install`** — installs dependencies on the Coolify server.
+- **`npm run build`** — creates the optimised production build of the website.
+- **`npm start`** — starts the Next.js production server.
+- **Port `3000`** — Next.js commonly runs on port 3000. Coolify will route your public domain to this internal application port.
+
+Use port **3000** unless your server or Coolify setup specifically requires a different port.
+
+---
+
+### 7. Environment variables
+
+This project **currently does not require any environment variables**.
+
+- No `.env` values are needed for the current frontend deployment.
+- If future features are added — such as analytics, a booking system, CMS, APIs, backend, or admin panel — environment variables may be required later.
+- **`.env` files should not be committed to GitHub.** They are listed in `.gitignore`.
+
+---
+
+### 8. Domain setup
+
+1. In the Coolify application settings, **add your domain or subdomain** (for example, `shirazafghan.co.uk` or `www.shirazafghan.co.uk`).
+2. Follow the **DNS instructions** shown by Coolify.
+3. At your domain registrar, **point the DNS record** to the server IP or target provided by Coolify.
+4. **Wait for DNS propagation** — this can take a few minutes to several hours.
+5. **Enable SSL / HTTPS** in Coolify once DNS is configured.
+6. After SSL is active, test the website using the **`https://`** version of your domain.
+
+---
+
+### 9. Deploy
+
+1. After the repository, branch, build command, start command, and port are configured, click **Deploy** in Coolify.
+2. Wait for the **deployment logs** to finish.
+3. If deployment fails, open the **build / deployment logs** first — they usually show the exact error.
+
+**Common things to check if deployment fails:**
+
+- Correct GitHub repository selected (`KhaanFaizan/Shiraz`)
+- Correct branch selected (`main`)
+- Dependencies installed successfully (`npm install`)
+- Production build passed (`npm run build`)
+- Start command is set to **`npm start`**
+- Application port is set to **`3000`**
+- Images and public assets are included in the GitHub repository (`public/pictures/`, `public/food/`, `public/css/`, etc.)
+
+---
+
+### 10. Post-deployment testing checklist
+
+After deployment succeeds, verify the live site:
+
+- [ ] Homepage opens correctly
+- [ ] `/menu` opens correctly
+- [ ] `/privacy-policy` opens correctly
+- [ ] `/cookie-policy` opens correctly
+- [ ] `/terms-and-conditions` opens correctly
+- [ ] Header links work correctly
+- [ ] Footer links work correctly
+- [ ] Food images load correctly
+- [ ] Homepage images load correctly
+- [ ] Menu category navigation works
+- [ ] Show More / Show Less works
+- [ ] Desktop view looks correct
+- [ ] iPad / tablet view looks correct
+- [ ] Mobile / iPhone view looks correct
+- [ ] No broken image icons
+- [ ] No old external menu link remains
+- [ ] No console errors in the browser developer tools
+
+---
+
+### Important notes
+
+- This is a **frontend-only Next.js website** — there is no backend or database to configure in Coolify.
+- Coolify must run it as a **Next.js / Node.js application** — do **not** upload it like a normal HTML/CSS website.
+- Future backend, admin panel, online booking, CMS, analytics, or ordering features would be **separate development phases** and may require additional Coolify services or environment variables at that time.
 
 ---
 
@@ -439,7 +501,7 @@ If future features are added — such as analytics, a booking API, CMS integrati
 
 ## Final Notes 
 
-This project delivers a **frontend-ready, premium restaurant website** that can be deployed to production after pushing to GitHub and connecting to Vercel (or a compatible Node.js host).
+This project delivers a **frontend-ready, premium restaurant website** that can be deployed to production after pushing the latest code to GitHub and connecting the repository to **Coolify**.
 
 **What you have today:**
 
@@ -455,10 +517,10 @@ This project delivers a **frontend-ready, premium restaurant website** that can 
 
 **Recommended next step for go-live:**
 
-1. Review the site locally (`npm run dev`) or on a Vercel preview URL
-2. Push the approved version to GitHub
-3. Deploy on Vercel
-4. Connect the production domain when ready
+1. Review the site locally (`npm run dev`) or confirm the latest code is on GitHub
+2. Connect the GitHub repository to Coolify and deploy using the settings in the **Deployment Guide — Coolify** section above
+3. Configure your domain and SSL in Coolify
+4. Run through the post-deployment testing checklist
 
 The current focus of this release is **brand presentation, responsive UI, internal menu browsing, and legal-page readiness** — giving Shiraz Afghan Restaurant a modern digital presence without the complexity of backend infrastructure.
 

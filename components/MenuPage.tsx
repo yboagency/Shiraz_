@@ -290,10 +290,13 @@ export default function MenuPage() {
             From charcoal-grilled kebabs to fragrant biryani and slow-cooked
             curries — a journey through the soul of Afghan and Persian flavour.
           </p>
-          <hr className="mnu-rule mnu-hero-rule" />
           <span className="mnu-hero-scroll">
-            Scroll to explore
-            <span aria-hidden="true" />
+            <span className="mnu-hero-scroll-row">
+              <span className="mnu-hero-scroll-hline" aria-hidden="true" />
+              Scroll to explore
+              <span className="mnu-hero-scroll-hline" aria-hidden="true" />
+            </span>
+            <span className="mnu-hero-scroll-vline" aria-hidden="true" />
           </span>
         </div>
       </header>

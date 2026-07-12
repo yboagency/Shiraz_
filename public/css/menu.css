@@ -130,17 +130,34 @@ body:has(.menu-page) {
 }
 .mnu-hero-scroll {
   margin-top: 34px;
-  font-family: var(--font-varela), sans-serif;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  font-size: 11px;
-  color: var(--mnu-gold);
   display: inline-flex;
   flex-direction: column;
   align-items: center;
   gap: 8px;
 }
-.mnu-hero-scroll span {
+.mnu-hero-scroll-row {
+  display: inline-flex;
+  align-items: center;
+  gap: clamp(12px, 2.5vw, 20px);
+  font-family: var(--font-varela), sans-serif;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  font-size: 11px;
+  color: var(--mnu-gold);
+}
+.mnu-hero-scroll-hline {
+  width: clamp(36px, 8vw, 72px);
+  height: 1px;
+  flex-shrink: 0;
+  box-shadow: 0 0 8px rgba(194, 132, 75, 0.35);
+}
+.mnu-hero-scroll-row .mnu-hero-scroll-hline:first-child {
+  background: linear-gradient(90deg, transparent, var(--mnu-gold));
+}
+.mnu-hero-scroll-row .mnu-hero-scroll-hline:last-child {
+  background: linear-gradient(270deg, transparent, var(--mnu-gold));
+}
+.mnu-hero-scroll-vline {
   width: 1px;
   height: 42px;
   background: linear-gradient(180deg, var(--mnu-gold), transparent);
@@ -649,6 +666,8 @@ body:has(.menu-page) {
   .mnu-hero p { margin-top: 16px; }
   .mnu-hero-rule { margin-top: 22px; }
   .mnu-hero-scroll { margin-top: 26px; }
+  .mnu-hero-scroll-row { gap: clamp(10px, 2vw, 14px); }
+  .mnu-hero-scroll-hline { width: clamp(24px, 6vw, 48px); }
 
   .mnu-featured-grid { grid-template-columns: 1fr; gap: 18px; }
   .mnu-feat-card { aspect-ratio: 16 / 11; }

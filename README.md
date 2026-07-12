@@ -437,7 +437,7 @@ If future features are added — such as analytics, a booking API, CMS integrati
 
 ---
 
-## Final Notes for CEO / Team Lead
+## Final Notes 
 
 This project delivers a **frontend-ready, premium restaurant website** that can be deployed to production after pushing to GitHub and connecting to Vercel (or a compatible Node.js host).
 

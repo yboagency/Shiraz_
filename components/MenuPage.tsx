@@ -382,9 +382,6 @@ export default function MenuPage() {
                     <div className="mnu-card-body">
                       <h3>{d.name}</h3>
                       <p>{d.desc}</p>
-                      <span className="mnu-card-foot">
-                        View <span className="mnu-arrow" aria-hidden="true">→</span>
-                      </span>
                     </div>
                   </article>
                 );

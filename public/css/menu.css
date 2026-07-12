@@ -409,20 +409,6 @@ body:has(.menu-page) {
   color: var(--mnu-muted);
   flex: 1;
 }
-.mnu-card-foot {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 8px;
-  font-family: var(--font-varela), sans-serif;
-  font-size: 12.5px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--mnu-gold);
-}
-.mnu-card-foot .mnu-arrow {
-  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-}
 /* hover interactions */
 .mnu-card:hover {
   transform: translateY(-8px);
@@ -431,8 +417,6 @@ body:has(.menu-page) {
               0 0 34px rgba(194, 132, 75, 0.18);
 }
 .mnu-card:hover .mnu-card-media img { transform: scale(1.08); }
-.mnu-card:hover .mnu-card-foot { color: var(--mnu-gold-bright); }
-.mnu-card:hover .mnu-arrow { transform: translateX(6px); }
 
 /* Extra dishes revealed by "Show More" — self-contained fade-up so they animate
    in on mount (no IntersectionObserver dependency), lightly staggered. */

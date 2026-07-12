@@ -639,3 +639,8 @@ a.menu-card {
     transform: none !important;
   }
 }
+
+/* Find Us — fit content instead of forcing full viewport height (desktop) */
+.panel.panel--reservation {
+  min-height: auto;
+}

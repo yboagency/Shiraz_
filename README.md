@@ -243,6 +243,18 @@ These changes only touched `components/MenuPage.tsx` and `public/css/menu.css` �
 
 ---
 
+## iOS Safari Sticky Nav Jitter Fix
+
+The `/menu` page's sticky category navigation bar (`.mnu-nav`) would visibly jump/shake during fast or momentum scrolling on iPhone/iOS Safari only — not on Android or desktop. Root cause and fix:
+
+- **Root cause**: `.mnu-nav` is a `position: sticky` element with a gradient background, border, and box-shadow, but it was never promoted to its own GPU compositor layer. Under fast scroll, iOS Safari can fall behind repositioning it on the main thread and then visibly snap it into place — the reported jump. Android's Chromium compositor handles sticky repositioning off the main thread and doesn't show this. A secondary contributor: the nav's auto-centering effect in `MenuPage.tsx` was reading/writing `track.scrollLeft` synchronously inside the scroll-driven `IntersectionObserver` callback that tracks the active category — i.e. mid-scroll — forcing a layout at the same moment iOS was trying to reposition the sticky bar.
+- **Fix — `public/css/menu.css`**: `.mnu-nav` now has `transform: translateZ(0)`, `will-change: transform`, and `backface-visibility: hidden`, forcing it onto its own compositor layer so iOS repositions it on the compositor thread instead of lagging on the main thread. Applied directly to the sticky element itself (not an ancestor), so it can't corrupt any fixed/sticky containing-block chain elsewhere on the page.
+- **Fix — `components/MenuPage.tsx`**: the nav auto-centering effect (`activeId` effect, ~line 240) now defers its `scrollLeft` read and `scrollTo` write into a `requestAnimationFrame`, taking it off the synchronous observer callback and avoiding a forced-layout collision with iOS's in-progress scroll handling.
+- Both changes are inert on Android and desktop (no visual or behavioural difference) — only the iOS compositing path is affected.
+- **Not yet device-verified**: these changes were diagnosed and implemented against the well-documented WebKit "sticky/fixed lags then snaps" compositor pattern, but have not been confirmed on a physical iPhone. Verify on real iOS Safari (fast flick-scroll through `/menu`) before considering this closed.
+
+---
+
 ## Current Limitations
 
 This version of the website is **frontend-only**. The following are **not** included:

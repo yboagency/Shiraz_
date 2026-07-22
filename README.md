@@ -100,12 +100,13 @@ A custom menu page built entirely within this project:
 - **Sticky category navigation bar** — quick access to all menu sections
 - **Smooth scroll to categories** — clicking a category scrolls to that section
 - **Active category highlighting** — the current section is highlighted as the user scrolls
-- **Food categories with local images** — starters, main courses, kebabs, biryani, karahi, seafood, pasta, sides, desserts, drinks, and more
-- **Dish cards** — each card shows an image, category tag, dish name, and short description
-- **Show More / Show Less** — categories with more than three dishes expand and collapse on demand
+- **Food categories with local images** — starters, main courses, rice dishes, biryani, karahi, seafood, pasta, sides, desserts, drinks, and more
+- **Dish cards** — each card shows an image, dish name, and short description
+- **All dishes visible immediately** — every dish in a category renders on load (no "Show More" click required)
 - **Chef’s Signatures featured strip** — highlighted signature dishes at the top of the menu
 - **Responsive design** — optimised layouts for desktop, tablet, and mobile
 - **Mobile performance optimisations** — sticky category bar and scroll behaviour tuned to reduce jitter on real devices
+- **Contain-based image scaling** — dish and featured-strip photos always scale to fit fully inside their card (no cropping/overflow), regardless of the source image's aspect ratio
 
 ### Legal Pages
 
@@ -223,6 +224,22 @@ The website was developed in stages, focusing on quality and responsiveness at e
 8. **Legal pages** — added Privacy Policy, Cookie Policy, and Terms & Conditions with consistent styling
 9. **Mobile and tablet fixes** — addressed sticky navigation, scroll performance, and spacing on real devices
 10. **Optimisation** — tuned scroll reveal, sticky category bar, and blur effects for smoother mobile performance
+
+---
+
+## Recent Menu Page Updates
+
+A round of client-requested fixes was applied to the `/menu` page (`components/MenuPage.tsx`, `public/css/menu.css`), addressing image display and content issues reported after the initial launch:
+
+- **Fixed image overflow/cropping on menu cards** — dish cards and the Chef's Signatures featured strip previously used `object-fit: cover`, which cropped or badly zoomed images that didn't match the card's aspect ratio (most noticeably the drinks photos on mobile). Both now use `object-fit: contain` with padding, so every image — portrait, landscape, square, or transparent — scales to fit fully inside its card and stays centred, on every breakpoint.
+- **Matched the featured-strip letterbox colour to the photos' own black backgrounds** — the Chicken Biryani photo (and any other photo whose canvas doesn't fill the 3:4 card box) was leaving a visible brown seam between the card background and the photo's black background. The featured card background is now pure black so it blends seamlessly.
+- **Removed the category badge** (the small "DRINKS" / "KEBABS WITH RICE" pill in the top-left of each card) — no longer rendered.
+- **Removed the duplicate section heading** — each category previously showed the category name twice (an eyebrow line above the `<h2>` title). Only the actual section/dish title now displays.
+- **Renamed the "Kebabs With Rice" category to "Rice Dishes"** — updated in the single source of truth (the `nav` field in `MenuPage.tsx`), which automatically updates the sticky nav pill and (previously) the card badge/eyebrow.
+- **Corrected the "Grilled Kebabs with Rice" dish image** — it was pointing at an unrelated whole lamb-shank photo; it now uses the mixed-grilled-kebabs-over-rice photo (`shiraz-mix-grill.webp`) that actually matches the dish name.
+- **Removed "Show More / Show Less"** — all dishes in every category now render immediately; the `expanded` state, `PREVIEW` slicing logic, and the associated button/CSS/keyframe were deleted as dead code.
+
+These changes only touched `components/MenuPage.tsx` and `public/css/menu.css` — no other pages, components, or the homepage menu teaser (`MenuSection.tsx`) were affected.
 
 ---
 
@@ -471,7 +488,8 @@ After deployment succeeds, verify the live site:
 - [ ] Food images load correctly
 - [ ] Homepage images load correctly
 - [ ] Menu category navigation works
-- [ ] Show More / Show Less works
+- [ ] All dishes in every category are visible without needing to click anything
+- [ ] Menu and featured-strip images scale to fit their cards with no overflow or cropping
 - [ ] Desktop view looks correct
 - [ ] iPad / tablet view looks correct
 - [ ] Mobile / iPhone view looks correct

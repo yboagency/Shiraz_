@@ -204,6 +204,18 @@ body:has(.menu-page) {
   border-top: 1px solid var(--mnu-line);
   border-bottom: 1px solid var(--mnu-line);
   box-shadow: 0 14px 30px rgba(0, 0, 0, 0.28);
+  /* iOS Safari promotes position:sticky elements onto the main-thread layout
+     path unless they already own a compositor layer; under fast/momentum
+     scrolling it then falls behind and visibly snaps the bar into place
+     (the reported jump/shake — Android's compositor doesn't have this
+     issue). translateZ(0) forces this element onto its own GPU layer so
+     iOS repositions it on the compositor thread instead, which removes the
+     lag without changing any visual appearance on any platform. */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 .mnu-nav-track {
   display: flex;

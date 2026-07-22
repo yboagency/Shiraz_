@@ -236,22 +236,30 @@ export default function MenuPage() {
   /* Keep the active pill within view of the horizontal nav.
    * Recentres INSTANTLY and only when the pill is actually off-screen, so it
    * never runs a smooth animation that competes with the user's vertical
-   * scroll (that competition is what made the sticky bar bounce/jitter). */
+   * scroll (that competition is what made the sticky bar bounce/jitter).
+   * The read/write is deferred to rAF because `activeId` is set from the
+   * category IntersectionObserver, which fires WHILE the page is still
+   * mid-scroll — running scrollLeft reads/writes synchronously at that
+   * point forces a layout in the middle of the browser's scroll handling,
+   * which is what made iOS Safari's sticky bar stutter on fast scrolls. */
   useEffect(() => {
     const track = navTrackRef.current;
     if (!track) return;
-    const btn = track.querySelector<HTMLElement>(`[data-nav="${activeId}"]`);
-    if (!btn) return;
-    const viewStart = track.scrollLeft;
-    const viewEnd = viewStart + track.clientWidth;
-    const btnStart = btn.offsetLeft;
-    const btnEnd = btnStart + btn.clientWidth;
-    if (btnStart < viewStart + 8 || btnEnd > viewEnd - 8) {
-      track.scrollTo({
-        left: btnStart - track.clientWidth / 2 + btn.clientWidth / 2,
-        behavior: "auto",
-      });
-    }
+    const raf = requestAnimationFrame(() => {
+      const btn = track.querySelector<HTMLElement>(`[data-nav="${activeId}"]`);
+      if (!btn) return;
+      const viewStart = track.scrollLeft;
+      const viewEnd = viewStart + track.clientWidth;
+      const btnStart = btn.offsetLeft;
+      const btnEnd = btnStart + btn.clientWidth;
+      if (btnStart < viewStart + 8 || btnEnd > viewEnd - 8) {
+        track.scrollTo({
+          left: btnStart - track.clientWidth / 2 + btn.clientWidth / 2,
+          behavior: "auto",
+        });
+      }
+    });
+    return () => cancelAnimationFrame(raf);
   }, [activeId]);
 
   const handleNavClick = useCallback((id: string) => {

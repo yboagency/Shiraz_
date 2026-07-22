@@ -327,10 +327,10 @@ export default function MenuPage() {
       {/* ── HERO ─────────────────────────────────────────────── */}
       <header className="mnu-hero">
         <div className="mnu-hero-float mnu-hero-float--right">
-          <Image src={`${F}/desserts/gulab-jamun-4-pcs.webp`} alt="" width={200} height={200} sizes="160px" />
+          <Image src={`${F}/desserts/gulab-jamun-4-pcs.webp`} alt="" width={200} height={200} sizes="160px" priority />
         </div>
         <div className="mnu-hero-float mnu-hero-float--left">
-          <Image src={`${F}/desserts/gulab-jamun-4-pcs.webp`} alt="" width={200} height={200} sizes="160px" />
+          <Image src={`${F}/desserts/gulab-jamun-4-pcs.webp`} alt="" width={200} height={200} sizes="160px" priority />
         </div>
 
         <div className="mnu-hero-inner">

@@ -53,7 +53,8 @@ export default function MenuSection() {
                   width={300}
                   height={200}
                   loading="lazy"
-                  unoptimized
+                  quality={85}
+                  sizes="(max-width: 980px) 100vw, (max-width: 1180px) 292px, 332px"
                   style={{ display: "block", objectFit: "cover" }}
                 />
               </picture>

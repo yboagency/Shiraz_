@@ -24,6 +24,9 @@ export const metadata: Metadata = {
 export default function TermsAndConditions() {
   return (
     <>
+      {/* Scoped to this route: React hoists <link> tags to <head> regardless of
+          nesting, so privacy.css only loads on legal pages instead of every page. */}
+      <link rel="stylesheet" href="/css/privacy.css" />
       <Header />
       <main className="privacy-page">
         <ScrollReveal />

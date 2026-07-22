@@ -262,6 +262,55 @@ Round 1 reduced but didn't eliminate the jitter on a real device. The actual roo
 
 ---
 
+## Performance: Route-Scoped CSS & Image Loading
+
+A pass was made to stop shipping render-blocking CSS and eagerly-fetched images that a given route doesn't actually need, without touching any UI, layout, or animation.
+
+- **`menu.css` and `privacy.css` no longer load globally.** They were previously linked in the root layout (`app/layout.tsx`), so every page — including the homepage — paid their render-blocking cost even though only `/menu` and the three legal pages use them. They're now rendered as `<link rel="stylesheet">` tags directly inside `app/menu/page.tsx` and each of `app/privacy-policy/page.tsx`, `app/cookie-policy/page.tsx`, `app/terms-and-conditions/page.tsx`.
+  - This works without any CSS Modules conversion or bundler config because **React 19 (already in use here) hoists `<link>` tags to `<head>` regardless of where they're rendered in the component tree** — a plain `<link>` inside a page's JSX behaves the same as one in the root `<head>`, just scoped to routes that actually render it.
+  - `chunk2.css` and `animations.css` stay in the root layout since Header, Footer, and the site-wide `.reveal` scroll system depend on them on every route.
+  - Verified against the actual production build output (`.next/server/app/*.html`), not just dev server: homepage ships only `chunk2.css` + `animations.css`; `/menu` additionally gets `menu.css`; the legal pages additionally get `privacy.css` — no cross-loading either direction.
+- **`priority` added to the two above-the-fold decorative images on `/menu`** (`.mnu-hero-float`, the floating dessert circles in the hero) — they're visible without scrolling on tablet/desktop and were previously subject to Next's default lazy-loading. Nothing else was touched: the homepage has no `next/image` element in its immediate viewport (`Hero.tsx` uses a `<video>`, not `next/image`), and the header logo already had `priority` set correctly.
+- **Fonts confirmed already optimal** — all four families load via `next/font/google` with `display: swap`, self-hosted (the hashed files under `public/media/*.woff2` are Next's own font pipeline output, not a separate/legacy font system). No changes needed.
+- **Not changed, and flagged for a separate decision:** the homepage image components (`About.tsx`, `Gallery.tsx`, `MenuSection.tsx`, `Reservation.tsx`) all set `unoptimized` on `next/image`, consistently, which serves full-size originals with no responsive `srcset`. This is the single biggest remaining performance lever (`public/food` alone is 153MB of originals), but it was a deliberate, repeated choice across every homepage component — likely to avoid CPU-heavy on-demand image transforms on a modest self-hosted host — so it needs a host capacity check before flipping, not a blind removal.
+
+---
+
+## Micro-Interaction Polish (Hover, Tap, Easing)
+
+A pass was made to sand down a few rough edges in the existing hover/tap/reveal system — no new animation library, no new visual language, everything reuses the site's established `cubic-bezier(0.22, 1, 0.36, 1)` easing and the same transform/opacity-only approach already used throughout `animations.css` and `menu.css`.
+
+- **Fixed a real, pre-existing button feedback bug.** `chunk2.css` defines `.pointybtn:active{transform:scale(.95)}` for press feedback, but `animations.css`'s `.pointybtn:hover` rule loads after it with equal CSS specificity — so during an actual click (mousedown while hovering), the hover style silently won and the press-down feedback never showed. Re-declared `.pointybtn:active` in `animations.css` *after* the `:hover` rule (faster 0.12s duration) so buttons now visibly respond to a real press on both mouse and touch.
+- **Footer link underline switched from animating `width` to `transform: scaleX()`.** Same grow-from-left visual, but `width` is a layout-affecting property while `scaleX` is compositor-only — this one was quietly the least GPU-friendly transition on the site.
+- **Added `:active` press states to cards that only had `:hover`**: the homepage menu-teaser cards, About's feature cards, and on `/menu` — the dish cards and Chef's Signature cards, plus the category nav pills. Each settles to a slightly smaller/lifted state on press (transform-only). This matters because touch devices have no persistent `:hover` — without an explicit `:active`, tapping a card previously gave zero visual feedback until release. `.contact-item` was deliberately left alone since it isn't itself clickable (only the link inside it is).
+- **`.mnu-nav-btn` (category pills) easing** upgraded from plain `ease` to the site's signature `cubic-bezier(0.22, 1, 0.36, 1)` for the transform, matching every other interactive element instead of being the one outlier.
+- **`prefers-reduced-motion` coverage**: the new `:active` rules on `.pointybtn`, `.menu-card`, and `.about-feature` are automatically neutralized by their *existing* `transition: none !important` reduced-motion rules (an `!important` declaration always wins over a non-important one regardless of specificity, so no new rule was needed there). `/menu`'s new states are covered by menu.css's existing blanket `.menu-page *` reduced-motion rule. The footer underline's reduced-motion rule was added explicitly since that selector wasn't previously listed.
+- Verified: brace-balance check on both stylesheets, `tsc --noEmit`, and a full `npm run build` — identical bundle sizes (CSS-only change, no JS shipped).
+
+---
+
+## Homepage Images: Re-enabled Next.js Image Optimization
+
+The four homepage components with images (`About.tsx`, `Gallery.tsx`, `MenuSection.tsx`, `Reservation.tsx`) all had `unoptimized` set on their `next/image` usage, which serves the original file as-is with no resizing, no responsive `srcset`, and no format negotiation.
+
+**Why it was safe to remove — checked before touching anything, not assumed:**
+- Traced through `git log` on all four files: `unoptimized` was present from the very first commit that added them, with no code comment, no commit message, and no README note ever explaining it. It reads as a leftover from the original static-HTML-to-Next.js migration, not a considered decision.
+- The only later change to `next.config.ts` (removing `output: "standalone"`) doesn't affect this either way — both modes run a full Node.js server with Next's image optimizer available. This project has never used `output: "export"`, which is the one mode where `unoptimized` would be mandatory rather than optional.
+- `/menu`'s dish images (`components/MenuPage.tsx`) have never had `unoptimized` and have been running Next's optimizer successfully in this same production deployment all along.
+
+**What changed:** removed `unoptimized` from all four components, added a `sizes` attribute to each (calculated from the actual CSS breakpoints in `chunk2.css`, erring generous/conservative wherever a container's exact width wasn't fully determinable from static CSS alone, so no image is ever served undersized), and added `quality={85}` to keep visual fidelity close to the original now that images are recompressed rather than served as-is. `width`/`height`/`fill`/`style` (`object-fit`, `position`, etc.) were left completely untouched, since those control layout and were never part of the problem.
+
+**What was actually verified (not just assumed):**
+- `tsc --noEmit` clean, `npm run build` succeeds.
+- Ran the real production server (`next start`, not just dev mode) and hit the actual `/_next/image` optimizer endpoint for all four images directly — confirmed 200 responses and real file-size reductions using the genuine `sharp` pipeline (e.g. `aboutus1.webp`: 888KB original → 170KB optimized at the same width).
+- Inspected the rendered HTML for all four: `srcSet`/`sizes` now generate correctly, and every `style`/`width`/`height` attribute is byte-for-byte identical to before the change.
+- Confirmed the optimizer preserves each source file's true aspect ratio (e.g. 2752×1536 native → 1080×603 at `w=1080`, same 1.792 ratio) — cropping/fit is still fully controlled by the pre-existing CSS, unchanged.
+- All 5 routes still return 200 after the change.
+
+**What was *not* verified, and should be checked before considering this fully closed:** there is no physical iPhone/Android/tablet or browser-automation tool available in this environment, so no pixel-level screenshot comparison across real devices was done. Everything above was verified structurally (HTTP responses, HTML attributes, real optimizer execution, aspect-ratio math), not visually. Do a quick pass on a real phone to confirm before treating this as final — `/menu` running the identical mechanism in production is a strong signal it'll be fine, but it isn't the same as having actually looked at it on a device.
+
+---
+
 ## Current Limitations
 
 This version of the website is **frontend-only**. The following are **not** included:

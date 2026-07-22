@@ -22,6 +22,9 @@ export const metadata: Metadata = {
 export default function Menu() {
   return (
     <>
+      {/* Scoped to this route: React hoists <link> tags to <head> regardless of
+          nesting, so menu.css only loads on /menu instead of on every page. */}
+      <link rel="stylesheet" href="/css/menu.css" />
       <Header />
       <main className="site">
         <MenuPage />

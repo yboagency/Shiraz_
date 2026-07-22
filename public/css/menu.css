@@ -257,12 +257,17 @@ body:has(.menu-page) {
   cursor: pointer;
   white-space: nowrap;
   transition: color 0.25s ease, background 0.25s ease,
-              border-color 0.25s ease, transform 0.25s ease;
+              border-color 0.25s ease,
+              transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .mnu-nav-btn:hover {
   color: var(--mnu-cream);
   border-color: var(--mnu-line);
   transform: translateY(-1px);
+}
+.mnu-nav-btn:active {
+  transform: scale(0.94);
+  transition-duration: 0.12s;
 }
 .mnu-nav-btn.is-active {
   color: #1a0d04;
@@ -374,6 +379,11 @@ body:has(.menu-page) {
 }
 .mnu-feat-card:hover img { transform: scale(1.09); }
 .mnu-feat-card:hover .mnu-feat-body { transform: translateY(0); }
+/* Press/tap feedback for touch devices (no persistent :hover there). */
+.mnu-feat-card:active {
+  transform: translateY(-5px) scale(0.985);
+  transition-duration: 0.15s;
+}
 
 /* ── DISH GRID + CARDS ──────────────────────────────────────────────── */
 .mnu-grid {
@@ -445,6 +455,11 @@ body:has(.menu-page) {
               0 0 34px rgba(194, 132, 75, 0.18);
 }
 .mnu-card:hover .mnu-card-media img { transform: scale(1.08); }
+/* Press/tap feedback for touch devices (no persistent :hover there). */
+.mnu-card:active {
+  transform: translateY(-4px) scale(0.98);
+  transition-duration: 0.15s;
+}
 
 /* ── CLOSING STRIP ──────────────────────────────────────────────────── */
 .mnu-outro {

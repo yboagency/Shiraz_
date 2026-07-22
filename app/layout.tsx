@@ -122,11 +122,12 @@ export default function RootLayout({
       className={`${bentham.variable} ${varelaRound.variable} ${catamaran.variable} ${bilboSwashCaps.variable}`}
     >
       <head>
-        {/* Serve CSS as static files so relative url() paths (../media, ../mobilebg) resolve correctly */}
+        {/* Serve CSS as static files so relative url() paths (../media, ../mobilebg) resolve correctly.
+            Only truly global styles (shared header/footer/reveal system) load here. Route-specific
+            stylesheets (menu.css, privacy.css) are rendered from their own routes instead, so pages
+            that don't need them don't pay their render-blocking cost. */}
         <link rel="stylesheet" href="/css/chunk2.css" />
         <link rel="stylesheet" href="/css/animations.css" />
-        <link rel="stylesheet" href="/css/menu.css" />
-        <link rel="stylesheet" href="/css/privacy.css" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(restaurantSchema) }}

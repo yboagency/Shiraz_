@@ -14,7 +14,8 @@ export default function Reservation() {
               alt="Dining interior"
               loading="lazy"
               fill
-              unoptimized
+              quality={85}
+              sizes="(max-width: 1024px) 100vw, 50vw"
               style={{ objectFit: "cover" }}
             />
           </picture>

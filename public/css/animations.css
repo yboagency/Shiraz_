@@ -110,6 +110,12 @@ a.menu-card {
   transform: translateY(-8px);
   box-shadow: 0 18px 40px rgba(0, 0, 0, 0.25);
 }
+/* Press/tap feedback — settles slightly on press so touch devices (which have
+ * no persistent :hover) still get a responsive, tactile press state. */
+.menu-card:active {
+  transform: translateY(-4px) scale(0.98);
+  transition-duration: 0.15s;
+}
 /*
  * On desktop, .menu-center relies on transform: translate(-50%) for
  * horizontal centering (position: absolute; left: 50%).
@@ -153,6 +159,18 @@ a.menu-card {
 .pointybtn:hover {
   transform: translateY(-2px);
   filter: brightness(1.1);
+}
+/*
+ * chunk2.css already defines `.pointybtn:active{transform:scale(...)}` for tap
+ * feedback, but it loads BEFORE this file — with equal selector specificity,
+ * the `:hover` rule above (defined later) silently wins during a real click
+ * (mousedown while hovering), so the press-down feedback never actually shows.
+ * Redeclaring `:active` here, after `:hover`, restores it without touching
+ * chunk2.css. Faster duration makes the press feel immediate/snappy. */
+.pointybtn:active {
+  transform: scale(var(--button-active-scale, 0.96));
+  filter: brightness(1.05);
+  transition-duration: 0.12s;
 }
 .about-arrow {
   transition: transform 0.25s ease, color 0.25s ease;
@@ -246,6 +264,11 @@ a.menu-card {
   box-shadow: 0 22px 48px rgba(0, 0, 0, 0.42),
               0 0 30px rgba(201, 149, 79, 0.18);
 }
+/* Press/tap feedback for touch devices. */
+.panel--about .about-feature:active {
+  transform: translateY(-3px) scale(0.985);
+  transition-duration: 0.15s;
+}
 .panel--about .about-feature-ico {
   display: block;
   width: 34px;
@@ -318,7 +341,8 @@ a.menu-card {
   .about-portrait-slide,
   .menu-card,
   .gallery-grid img,
-  .pointybtn {
+  .pointybtn,
+  .footer-column ul li a::after {
     transition: none !important;
   }
   .reveal { opacity: 1; transform: none; }
@@ -605,7 +629,10 @@ a.menu-card {
   transform: translateY(-4px) scale(1.08);
 }
 
-/* Footer nav links — gold colour shift + underline grow. */
+/* Footer nav links — gold colour shift + underline grow.
+ * The underline is full-width and GPU-scaled (transform: scaleX) rather than
+ * animating `width`, which is a layout-affecting property — same visual grow
+ * effect, compositor-only. */
 .footer-column ul li a {
   position: relative;
   transition: color 0.3s ease;
@@ -615,16 +642,18 @@ a.menu-card {
   position: absolute;
   left: 0;
   bottom: -2px;
-  width: 0;
+  width: 100%;
   height: 1px;
   background: var(--text-gold);
-  transition: width 0.3s ease;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .footer-column ul li a:hover {
   color: var(--text-gold);
 }
 .footer-column ul li a:hover::after {
-  width: 100%;
+  transform: scaleX(1);
 }
 
 @media (prefers-reduced-motion: reduce) {

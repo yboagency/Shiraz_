@@ -24,7 +24,8 @@ export default function Gallery() {
                   alt={img.alt}
                   loading="lazy"
                   fill
-                  unoptimized
+                  quality={85}
+                  sizes="(max-width: 980px) 100vw, 50vw"
                   style={{ objectFit: "cover" }}
                 />
               </picture>

@@ -82,7 +82,8 @@ export default function About() {
                   width={600}
                   height={400}
                   loading="lazy"
-                  unoptimized
+                  quality={85}
+                  sizes="(max-width: 980px) 100vw, (max-width: 1180px) 70vw, 65vw"
                   className={`about-landscape${i === current ? " active" : ""}${i === fading ? " fading" : ""}`}
                   style={{ color: "transparent" }}
                 />
@@ -101,7 +102,8 @@ export default function About() {
                   width={400}
                   height={600}
                   loading="lazy"
-                  unoptimized
+                  quality={85}
+                  sizes="(max-width: 980px) 100vw, (max-width: 1180px) 260px, 308px"
                   className={`about-portrait-slide${i === current ? " active" : ""}${i === fading ? " fading" : ""}`}
                   style={{ color: "transparent" }}
                 />

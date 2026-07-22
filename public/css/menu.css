@@ -297,6 +297,7 @@ body:has(.menu-page) {
   aspect-ratio: 3 / 4;
   border: 1px solid var(--mnu-line);
   box-shadow: 0 22px 50px rgba(0, 0, 0, 0.5);
+  background: #000;
   transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
               box-shadow 0.5s ease, border-color 0.5s ease;
 }
@@ -305,7 +306,8 @@ body:has(.menu-page) {
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  padding: clamp(10px, 2vw, 20px) clamp(10px, 2vw, 20px) clamp(70px, 12vw, 100px);
   transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .mnu-feat-card::after {
@@ -373,9 +375,11 @@ body:has(.menu-page) {
   width: 100%;
   aspect-ratio: 4 / 3;
   overflow: hidden;
+  background: var(--mnu-bg-3);
 }
 .mnu-card-media img {
-  object-fit: cover;
+  object-fit: contain;
+  padding: clamp(10px, 2vw, 20px);
   transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .mnu-card-media::after {
@@ -384,23 +388,7 @@ body:has(.menu-page) {
   inset: 0;
   background: linear-gradient(180deg, transparent 55%, rgba(13, 4, 0, 0.55));
   opacity: 0.9;
-}
-.mnu-card-tag {
-  position: absolute;
-  z-index: 2;
-  top: 12px;
-  left: 12px;
-  font-family: var(--font-varela), sans-serif;
-  font-size: 10.5px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--mnu-cream);
-  background: rgba(13, 4, 0, 0.55);
-  border: 1px solid var(--mnu-line);
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
-  padding: 5px 10px;
-  border-radius: 999px;
+  pointer-events: none;
 }
 .mnu-card-body {
   padding: 16px 18px 18px;
@@ -434,60 +422,6 @@ body:has(.menu-page) {
               0 0 34px rgba(194, 132, 75, 0.18);
 }
 .mnu-card:hover .mnu-card-media img { transform: scale(1.08); }
-
-/* Extra dishes revealed by "Show More" — self-contained fade-up so they animate
-   in on mount (no IntersectionObserver dependency), lightly staggered. */
-.mnu-card--extra {
-  animation: mnuCardIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
-  animation-delay: calc(var(--i, 0) * 70ms);
-}
-
-/* ── SHOW MORE / SHOW LESS ──────────────────────────────────────────── */
-.mnu-more-wrap {
-  display: flex;
-  justify-content: center;
-  margin-top: clamp(28px, 4vh, 44px);
-}
-.mnu-more-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  font-family: var(--font-varela), sans-serif;
-  text-transform: uppercase;
-  letter-spacing: 0.22em;
-  font-size: 12.5px;
-  color: var(--mnu-gold);
-  background: linear-gradient(180deg, rgba(194, 132, 75, 0.08), rgba(194, 132, 75, 0.02));
-  border: 1px solid rgba(194, 132, 75, 0.4);
-  padding: 13px 30px;
-  border-radius: 999px;
-  cursor: pointer;
-  transition: color 0.3s ease, background 0.3s ease, border-color 0.3s ease,
-              box-shadow 0.3s ease, transform 0.3s ease;
-}
-.mnu-more-btn:hover {
-  color: #1a0d04;
-  background: linear-gradient(135deg, var(--mnu-gold-bright), var(--mnu-gold));
-  border-color: var(--mnu-gold-bright);
-  box-shadow: 0 12px 30px rgba(194, 132, 75, 0.32);
-  transform: translateY(-2px);
-}
-.mnu-more-btn:focus-visible {
-  outline: 2px solid var(--mnu-gold-bright);
-  outline-offset: 3px;
-}
-/* thin chevron drawn from borders; rotates down↔up with state */
-.mnu-more-ico {
-  width: 8px;
-  height: 8px;
-  border-right: 1.5px solid currentColor;
-  border-bottom: 1.5px solid currentColor;
-  transform: translateY(-2px) rotate(45deg);
-  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.mnu-more-btn:hover .mnu-more-ico { transform: translateY(0) rotate(45deg); }
-.mnu-more-btn[aria-expanded="true"] .mnu-more-ico { transform: translateY(2px) rotate(-135deg); }
-.mnu-more-btn[aria-expanded="true"]:hover .mnu-more-ico { transform: translateY(0) rotate(-135deg); }
 
 /* ── CLOSING STRIP ──────────────────────────────────────────────────── */
 .mnu-outro {
@@ -545,10 +479,6 @@ body:has(.menu-page) {
 @keyframes mnuFloatB {
   0%, 100% { transform: translateY(0) rotate(2deg); }
   50% { transform: translateY(-18px) rotate(-2deg); }
-}
-@keyframes mnuCardIn {
-  from { opacity: 0; transform: translateY(26px); }
-  to { opacity: 1; transform: none; }
 }
 @keyframes mnuHeroRise {
   from { opacity: 0; transform: translateY(40px); }
@@ -634,14 +564,6 @@ body:has(.menu-page) {
     background: linear-gradient(180deg, rgba(13, 4, 0, 0.97), rgba(13, 4, 0, 0.92));
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
-  }
-  /* Same reasoning for the per-card image tags — dozens of live blur layers are
-     expensive to repaint on every scroll frame on mobile. Slightly higher bg
-     opacity keeps the label just as legible without the blur. */
-  .mnu-card-tag {
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-    background: rgba(13, 4, 0, 0.72);
   }
   .mnu-section { scroll-margin-top: 156px; }
   /* trim the hero so the first view isn't mostly empty dark space */

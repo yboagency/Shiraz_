@@ -55,13 +55,13 @@ const categories: Category[] = [
   },
   {
     id: "grilled-kebabs-with-rice",
-    nav: "Kebabs With Rice",
+    nav: "Rice Dishes",
     title: "Grilled Kebabs with Rice",
     blurb: "Charcoal-grilled kebabs served over fragrant pilau rice.",
     dishes: [
       { name: "Chicken with Rice", img: `${F}/main-course/grilled-kebabs-with-rice/chicken-with-rice.avif`, desc: "Grilled chicken over seasoned rice." },
       { name: "Full / Half Chicken with Rice", img: `${F}/main-course/grilled-kebabs-with-rice/full-chicken---half-chicken-with-rice.webp`, desc: "Chargrilled chicken portions with pilau." },
-      { name: "Grilled Kebabs with Rice", img: `${F}/main-course/grilled-kebabs-with-rice/grilled-kebabs-with-rice.webp`, desc: "Mixed grilled kebabs on a bed of rice." },
+      { name: "Grilled Kebabs with Rice", img: `${F}/main-course/shiraz-mix-grill/shiraz-mix-grill.webp`, desc: "Mixed grilled kebabs on a bed of rice." },
       { name: "Lamb Ribs with Rice", img: `${F}/main-course/grilled-kebabs-with-rice/lamb-ribs-with-rice.webp`, desc: "Tender lamb ribs with fragrant rice." },
       { name: "Namkin Lamb Chops with Rice", img: `${F}/main-course/grilled-kebabs-with-rice/namkin-lamb-chops-with-rice.webp`, desc: "Salt-and-spice lamb chops with rice." },
     ],
@@ -170,18 +170,10 @@ const featured: { name: string; tag: string; img: string }[] = [
   { name: "Chopan Kebab", tag: "Kebab", img: `${F}/main-course/shiraz-special-kebabs/chopan-kebab.webp` },
 ];
 
-/* How many dishes are shown before a category needs "Show More". */
-const PREVIEW = 3;
-
 export default function MenuPage() {
   const [activeId, setActiveId] = useState<string>(categories[0].id);
-  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const navTrackRef = useRef<HTMLDivElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
-
-  const toggleCategory = useCallback((id: string) => {
-    setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
-  }, []);
 
   /* Scroll-reveal — self-contained, uses .mnu-reveal (not the global .reveal) */
   useEffect(() => {
@@ -339,7 +331,7 @@ export default function MenuPage() {
                 alt={f.name}
                 fill
                 sizes="(max-width: 640px) 100vw, (max-width: 1180px) 50vw, 25vw"
-                style={{ objectFit: "cover" }}
+                style={{ objectFit: "contain" }}
               />
               <div className="mnu-feat-body">
                 <span className="mnu-feat-tag">{f.tag}</span>
@@ -351,61 +343,38 @@ export default function MenuPage() {
       </section>
 
       {/* ── CATEGORY SECTIONS ────────────────────────────────── */}
-      {categories.map((c) => {
-        const isExpanded = !!expanded[c.id];
-        const hasMore = c.dishes.length > PREVIEW;
-        const visibleDishes = isExpanded ? c.dishes : c.dishes.slice(0, PREVIEW);
-        return (
-          <section key={c.id} id={`cat-${c.id}`} className="mnu-section">
-            <div className="mnu-section-head mnu-reveal">
-              <p className="mnu-eyebrow">{c.nav}</p>
-              <h2>{c.title}</h2>
-              <p>{c.blurb}</p>
-              <hr className="mnu-rule" />
-            </div>
-            <div className="mnu-grid">
-              {visibleDishes.map((d, i) => {
-                const isExtra = i >= PREVIEW;
-                return (
-                  <article
-                    key={d.name}
-                    className={`mnu-card ${isExtra ? "mnu-card--extra" : "mnu-reveal"}`}
-                    style={{ ["--i" as string]: (isExtra ? i - PREVIEW : i) % 3 }}
-                  >
-                    <div className="mnu-card-media">
-                      <span className="mnu-card-tag">{c.nav}</span>
-                      <Image
-                        src={d.img}
-                        alt={d.name}
-                        fill
-                        sizes="(max-width: 640px) 100vw, (max-width: 1180px) 50vw, 33vw"
-                        style={{ objectFit: "cover" }}
-                      />
-                    </div>
-                    <div className="mnu-card-body">
-                      <h3>{d.name}</h3>
-                      <p>{d.desc}</p>
-                    </div>
-                  </article>
-                );
-              })}
-            </div>
-            {hasMore && (
-              <div className="mnu-more-wrap">
-                <button
-                  type="button"
-                  className="mnu-more-btn"
-                  aria-expanded={isExpanded}
-                  onClick={() => toggleCategory(c.id)}
-                >
-                  <span>{isExpanded ? "Show Less" : "Show More"}</span>
-                  <span className="mnu-more-ico" aria-hidden="true" />
-                </button>
-              </div>
-            )}
-          </section>
-        );
-      })}
+      {categories.map((c) => (
+        <section key={c.id} id={`cat-${c.id}`} className="mnu-section">
+          <div className="mnu-section-head mnu-reveal">
+            <h2>{c.title}</h2>
+            <p>{c.blurb}</p>
+            <hr className="mnu-rule" />
+          </div>
+          <div className="mnu-grid">
+            {c.dishes.map((d, i) => (
+              <article
+                key={d.name}
+                className="mnu-card mnu-reveal"
+                style={{ ["--i" as string]: i % 3 }}
+              >
+                <div className="mnu-card-media">
+                  <Image
+                    src={d.img}
+                    alt={d.name}
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1180px) 50vw, 33vw"
+                    style={{ objectFit: "contain" }}
+                  />
+                </div>
+                <div className="mnu-card-body">
+                  <h3>{d.name}</h3>
+                  <p>{d.desc}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      ))}
 
       {/* ── OUTRO ────────────────────────────────────────────── */}
       <section className="mnu-outro mnu-reveal">

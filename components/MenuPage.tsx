@@ -172,7 +172,11 @@ const featured: { name: string; tag: string; img: string }[] = [
 
 export default function MenuPage() {
   const [activeId, setActiveId] = useState<string>(categories[0].id);
+  const [navPinned, setNavPinned] = useState(false);
+  const [navSpace, setNavSpace] = useState(0);
   const navTrackRef = useRef<HTMLDivElement>(null);
+  const navElRef = useRef<HTMLElement>(null);
+  const navSpacerRef = useRef<HTMLDivElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
 
   /* Scroll-reveal — self-contained, uses .mnu-reveal (not the global .reveal) */
@@ -208,6 +212,54 @@ export default function MenuPage() {
     );
     els.forEach((el) => io.observe(el));
     return () => io.disconnect();
+  }, []);
+
+  /* Keep the reserved spacer in sync with the nav bar's real rendered size
+   * (height + its own margin-bottom) so swapping it to `position: fixed`
+   * (see the effect below) never shifts the content above/below it. */
+  useEffect(() => {
+    const nav = navElRef.current;
+    if (!nav) return;
+    const measure = () => {
+      const marginBottom = parseFloat(getComputedStyle(nav).marginBottom || "0");
+      setNavSpace(nav.getBoundingClientRect().height + marginBottom);
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(nav);
+    return () => ro.disconnect();
+  }, []);
+
+  /* Pin the category nav the same way the site's own header is pinned —
+   * `position: fixed`, toggled by scroll position — instead of native
+   * `position: sticky`. iOS Safari has a long-standing bug where sticky
+   * elements that paint their own background/border/box-shadow lag behind
+   * fast/momentum scrolling and visibly snap into place; the header (plain
+   * `position: fixed`) doesn't have this problem on the same page, so the
+   * category bar is pinned the same way instead of fighting the sticky bug. */
+  useEffect(() => {
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      const spacer = navSpacerRef.current;
+      if (!spacer) return;
+      const header = document.querySelector<HTMLElement>("header.nav");
+      const headerHeight = header ? header.getBoundingClientRect().height : 0;
+      setNavPinned(spacer.getBoundingClientRect().top <= headerHeight);
+    };
+    const onScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(update);
+      }
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
   }, []);
 
   /* Active-category tracking for the sticky nav */
@@ -302,7 +354,17 @@ export default function MenuPage() {
       </header>
 
       {/* ── STICKY CATEGORY NAV ──────────────────────────────── */}
-      <nav className="mnu-nav" aria-label="Menu categories">
+      <div
+        ref={navSpacerRef}
+        className="mnu-nav-spacer"
+        style={{ height: navPinned ? navSpace : 0 }}
+        aria-hidden="true"
+      />
+      <nav
+        ref={navElRef}
+        className={`mnu-nav${navPinned ? " is-pinned" : ""}`}
+        aria-label="Menu categories"
+      >
         <div className="mnu-nav-wrap">
           <div className="mnu-nav-track" ref={navTrackRef}>
             {categories.map((c) => (
